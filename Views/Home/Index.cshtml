@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <div class="container-fluid">
+        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Carlitos</a>
+        <div class="navbar-brand">
+            <ul class="navbar-nav flex-grow-1">
+                @model LoginInfo
+                @if (Model != null)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Logout">
+                            <i class="bi bi-person"></i>
+                            @Model.username
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Register">
+                            <i class="bi bi-person-lines-fill"></i>
+                            Register
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Login">
+                            <i class="bi bi-person"></i>
+                            Login
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <h2 class="display-4">Carlitos Web</h2>
+</div>
