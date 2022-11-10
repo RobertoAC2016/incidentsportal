@@ -1,3 +1,6 @@
+using incidents.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
@@ -5,6 +8,13 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddCors();
 
 builder.Services.AddSession();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(option => {
+        option.LoginPath = "/Home/Index";
+        option.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+        option.AccessDeniedPath = "/Access/Index";
+    });
 
 var app = builder.Build();
 
@@ -28,6 +38,8 @@ app.UseCors(d => d
 );
 
 app.UseAuthorization();
+
+app.UseAuthentication();
 
 app.MapControllerRoute(
     name: "default",

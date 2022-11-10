@@ -14,6 +14,42 @@
 </head>
 <body>
     <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-house"></i>
+                </a>
+                <div class="navbar-brand">
+                    <ul class="navbar-nav flex-grow-1">
+                        @using Microsoft.AspNetCore.Http;
+                        @if (Context.Session.GetString("username") != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Logout">
+                                    <i class="bi bi-box-arrow-left"></i>
+                                    @Context.Session.GetString("fullname")
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Register">
+                                    <i class="bi bi-person-lines-fill"></i>
+                                    Register
+                                </a>
+                            </li>
+                            <li>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Index">
+                                    <i class="bi bi-person"></i>
+                                    Login
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </header>
     <div class="container">
         <main role="main" class="pb-3">
