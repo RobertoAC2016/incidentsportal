@@ -1,6 +1,4 @@
 ﻿using incidents.Models;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace incidents.Controllers
@@ -45,8 +43,7 @@ namespace incidents.Controllers
         }
         public async Task<IActionResult> Logout()
         {
-            //HttpContext.Session.Clear();
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }
     }

@@ -1,9 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http;
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - incidents</title>
+    <title>@ViewData["Title"] - Ticket Analysis System</title>
     <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
     <!-- JavaScript Bundle with Popper -->
@@ -18,12 +20,27 @@
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                     <i class="bi bi-house"></i>
+                    Ticket Analysis System
                 </a>
                 <div class="navbar-brand">
                     <ul class="navbar-nav flex-grow-1">
-                        @using Microsoft.AspNetCore.Http;
-                        @if (Context.Session.GetString("username") != null)
+                        @if (!string.IsNullOrEmpty(Context.Session.GetString("username")))
                         {
+                            @if ($"{Context.Session.GetString("role")}".Equals("admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Data" asp-action="Users">
+                                        <i class="bi bi-file-person"></i>
+                                        Users
+                                    </a>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Data" asp-action="Index">
+                                    <i class="bi bi-file-earmark-post-fill"></i>
+                                    Tickets
+                                </a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Logout">
                                     <i class="bi bi-box-arrow-left"></i>
@@ -59,7 +76,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2022 - incidents - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2022 - Ticket Analysis System
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

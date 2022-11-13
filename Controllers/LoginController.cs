@@ -1,9 +1,5 @@
 ﻿using incidents.Models;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using System.Security.Claims;
 
 namespace incidents.Controllers
 {
@@ -38,19 +34,9 @@ namespace incidents.Controllers
                 }
                 else
                 {
-                    var claims = new List<Claim> {
-                        new Claim(ClaimTypes.Name, obj.name),
-                        new Claim("username", obj.login),
-                    };
-                    foreach (var role in obj.access)
-                    {
-                        claims.Add(new Claim(ClaimTypes.Role, role));
-                    }
-                    var claimidentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimidentity));
-                    //HttpContext.Session.SetString("username", obj.login);
-                    //HttpContext.Session.SetString("token", obj.token);
-                    //HttpContext.Session.SetString("fullname", obj.name);
+                    HttpContext.Session.SetString("username", obj.login);
+                    HttpContext.Session.SetString("fullname", obj.name);
+                    HttpContext.Session.SetString("role", obj.role);
                     return RedirectToAction("Index", "Home");
                 }
             }

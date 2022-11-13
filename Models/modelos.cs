@@ -3,16 +3,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace incidents.Models
 {
-    public class register_user
-    {
-        public int id { get; set; } = 0;
-        public string name { get; set; } = "";
-        public string lastname { get; set; } = "";
-        public string email { get; set; } = "";
-        public string phone { get; set; } = "";
-        public string department { get; set; } = "";
-        public string status { get; set; } = "new";
-    }
+    //public class register_user
+    //{
+    //    public int id { get; set; } = 0;
+    //    public string name { get; set; } = "";
+    //    public string lastname { get; set; } = "";
+    //    public string email { get; set; } = "";
+    //    public string phone { get; set; } = "";
+    //    public string department { get; set; } = "";
+    //    public string status { get; set; } = "new";
+    //}
     public class department
     {
         public int? id { get; set; }
@@ -21,14 +21,20 @@ namespace incidents.Models
     }
     public class registro
     {
-        public string name { get; set; } = "";
-        public string lastname { get; set; } = "";
-        public string department { get; set; } = "";
-        public string phone { get; set; } = "";
-        public string email { get; set; } = "";
-        public string username { get; set; } = "";
-        public string password { get; set; } = "";
-        public List<department> departments { get; set; }
+        public int? idatencion { get; set; }
+        public string? empleado { get; set; }
+        public string? usuario { get; set; }
+        public string? contrasena { get; set; }
+        public string? departamento { get; set; }
+        public string? rol { get; set; }
+        public string? phone { get; set; }
+        public string? email { get; set; }
+        public List<String>? departamentos { get; set; }
+        public List<String>? roles { get; set; }
+        public string? entrada { get; set; }
+        public string? salida { get; set; }
+        public string? entrada_comida { get; set; }
+        public string? salida_comida { get; set; }
     }
     public class login_request
     {
@@ -45,10 +51,16 @@ namespace incidents.Models
     }
     public class login_validation : response_sql
     {
-        public string login { get; set; } = "";
-        public string token { get; set; } = "";
-        public string name { get; set; } = "";
-        public List<String> access { get; set; }
+        public String login { get; set; } = "";
+        public String token { get; set; } = "";
+        public String name { get; set; } = "";
+        public String role { get; set; }
         public bool autenticated { get; set; }
+    }
+    public class incident
+    {
+        public int id { get; set; }
+        public DateTime creation { get; set; }
+        public String status { get; set; } = "active";
     }
 }
