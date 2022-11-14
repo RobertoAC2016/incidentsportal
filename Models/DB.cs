@@ -32,9 +32,10 @@ namespace incidents.Models
             var status = "ok";
             try
             {
-                var SQL = "select top 1 a.id from accounts a, privileges b where a.id = b.ida and " +
-                    $"(a.email = '{usr.email}' or b.username = '{usr.username}');";
-                SqlDataAdapter da = new SqlDataAdapter(SQL, getcon());
+                CON = getcon();
+                var SQL = "select a.idAtencion from Atencion a inner join UsuariosTickets b on a.idAtencion = b.idusuarios Where " +
+                    $"b.usuario = '{usr.usuario}';";
+                SqlDataAdapter da = new SqlDataAdapter(SQL, CON);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
                 if (dt.Rows.Count > 0)
@@ -43,9 +44,9 @@ namespace incidents.Models
                 }
                 else
                 {
-                    SQL = "insert into UsusariosTickets (name, lastname, email, phone, department, status, creation) values " +
-                    $"('{usr.name}','{usr.lastname}','{usr.email}','{usr.phone}', '{usr.department}',1, GETDATE());select SCOPE_IDENTITY();";
-                    da = new SqlDataAdapter(SQL, getcon());
+                    SQL = $"insert into Atencion (Empleado, Departamento) values ('{usr.empleado}', '{usr.departamento}');" +
+                        "select SCOPE_IDENTITY();";
+                    da = new SqlDataAdapter(SQL, CON);
                     dt = new DataTable();
                     da.Fill(dt);
                     if (dt.Rows.Count <= 0)
@@ -55,30 +56,21 @@ namespace incidents.Models
                     else
                     {
                         var ida = dt.Rows[0][0];
-                        var skey = SEC.Encrypt(usr.password);
-                        SQL = "insert into privileges (ida, username, password, creation, status) values " +
-                            $"({ida}, '{usr.username}', '{skey}', GETDATE(), 1);" +
-                            $"insert into Atencion (Empleado, Departamento) values ();" +
-                            $"insert into Horarios (entrada, salida, comida_in, comida_out) values ();" +
+                        //var skey = SEC.Encrypt(usr.password);
+                        SQL = "SET IDENTITY_INSERT UsuariosTickets ON;" +
+                            "INSERT into UsuariosTickets ([idUsuarios], [Usuario], [Contraseña], [Rol]) VALUES " +
+                            $"({ida}, '{usr.usuario}', '{usr.contrasena}', '{usr.rol}'); " +
+                            "SET IDENTITY_INSERT UsuariosTickets OFF; " +
+                            "insert into Horarios (idAtencion, entrada, salida, comida_in, comida_out, estatus) values " +
+                            $"({ida}, '{usr.entrada.ToString().Replace("T", " ")}', '{usr.salida.ToString().Replace("T", " ")}', " +
+                            $"'{usr.entrada_comida.ToString().Replace("T", " ")}', '{usr.salida_comida.ToString().Replace("T", " ")}', 'activo');" +
                             $"select SCOPE_IDENTITY();";
-                        da = new SqlDataAdapter(SQL, getcon());
+                        da = new SqlDataAdapter(SQL, CON);
                         dt = new DataTable();
                         da.Fill(dt);
                         if (dt.Rows.Count <= 0)
                         {
                             status = "privileges";
-                        }
-                        else
-                        {//rols_account
-                            SQL = "insert into rols_account (ida, idr, creation) values " +
-                                $"({ida}, 1, GETDATE());select SCOPE_IDENTITY();";
-                            da = new SqlDataAdapter(SQL, getcon());
-                            dt = new DataTable();
-                            da.Fill(dt);
-                            if (dt.Rows.Count <= 0)
-                            {
-                                status = "privileges";
-                            }
                         }
                     }
                 }
@@ -94,8 +86,8 @@ namespace incidents.Models
             List<String> deps = new List<String>();
             try
             {
-                var fil = string.IsNullOrEmpty(filterbyid) ? "" : $" where a.ida = {filterbyid} order by b.name";
-                var SQL = $"select b.name from rols_account a inner join rols b on a.idr = b.id and b.status = 'active'{fil};";
+                var fil = string.IsNullOrEmpty(filterbyid) ? "" : $" and id = {filterbyid}";
+                var SQL = $"select name from areas where status = 'active'{fil} order by name;";
                 SqlDataAdapter da = new SqlDataAdapter(SQL, getcon());
                 DataTable dt = new DataTable();
                 da.Fill(dt);
@@ -116,43 +108,32 @@ namespace incidents.Models
             try
             {
                 CON = getcon();
-                var SQL = $"select top 1 id from privileges where username = '{usr.username}';";
+                var SQL = $"select top 1 idusuarios from UsuariosTickets where usuario = '{usr.username}';";
                 SqlDataAdapter da = new SqlDataAdapter(SQL, CON);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
                 if (dt.Rows.Count > 0)
                 {
-                    SQL = $"select top 1 id from privileges where username = '{usr.username}' and status = 1;";
-                    da = new SqlDataAdapter(SQL, CON); dt = new DataTable();
+                    var ida = $"{dt.Rows[0][0]}";
+                    var skey = usr.password;
+                    SQL = "select a.Empleado, a.Departamento, b.rol from Atencion a inner join " +
+                        "UsuariosTickets b on a.idAtencion = b.idusuarios where " +
+                        $"b.usuario = '{usr.username}' and b.Contraseña = '{skey}';";
+                    da = new SqlDataAdapter(SQL, CON); 
+                    dt = new DataTable();
                     da.Fill(dt);
                     if (dt.Rows.Count > 0)
                     {
-                        var ida = $"{dt.Rows[0][0]}";
-                        var skey = SEC.Encrypt(usr.password);
-                        SQL = "select top 1 a.name, a.lastname from accounts a, privileges b where a.id = b.ida and " +
-                            $"b.username = '{usr.username}' and b.password = '{skey}';";
-                        da = new SqlDataAdapter(SQL, CON); dt = new DataTable();
-                        da.Fill(dt);
-                        if (dt.Rows.Count > 0)
-                        {   
-                            var tkn = conf.GetSection("skey").Value;
-                            obj.token = SEC.CreateToken(usr.username, tkn);
-                            obj.autenticated = true;
-                            obj.message = "";
-                            obj.login = usr.username;
-                            obj.name = $"{dt.Rows[0][0]} {dt.Rows[0][1]}";
-                            obj.role = get_user_role(ida);
-                        }
-                        else
-                        {
-                            obj.autenticated = false;
-                            obj.message = "Error invalid password";
-                        }
+                        obj.autenticated = true;
+                        obj.message = "";
+                        obj.login = usr.username;
+                        obj.name = $"{dt.Rows[0][0]}";
+                        obj.role = $"{dt.Rows[0][2]}";
                     }
                     else
                     {
                         obj.autenticated = false;
-                        obj.message = "Error user inactive";
+                        obj.message = "Error invalid password";
                     }
                 }
                 else
@@ -168,13 +149,13 @@ namespace incidents.Models
             }
             return obj;
         }
-        public List<String> get_roles(String ida = "", String constr = "")
+        public List<String> get_roles(String filterbyid = "", String constr = "")
         {
             List<String> rols = new List<String>();
             try
             {
-                var fil = string.IsNullOrEmpty(ida) ? "" : $" where a.id = {ida}";
-                var SQL = $"select b.name from rols_account a inner join rols b on a.idr = b.id and b.status = 'active'{fil};";
+                var fil = string.IsNullOrEmpty(filterbyid) ? "" : $" and id = {filterbyid}";
+                var SQL = $"select name from rols where status = 'active'{fil} order by name;";
                 SqlDataAdapter da = new SqlDataAdapter(SQL, string.IsNullOrEmpty(constr) ? getcon() : getcon(constr));
                 DataTable dt = new DataTable();
                 da.Fill(dt);
@@ -214,31 +195,31 @@ namespace incidents.Models
             }
             return tts;
         }
-        public List<user_register> get_users(String filterbyid = "")
+        public List<registro> get_users(String filterbyid = "")
         {
-            List<user_register> users = new List<user_register>();
+            List<registro> users = new List<registro>();
             try
             {
-                var fil = string.IsNullOrEmpty(filterbyid) ? "" : $" where a.id = {filterbyid}";
-                var SQL = "select a.id, a.name, a.lastname, a.phone, a.email, a.department, b.username, b.password from accounts a inner join privileges b " +
-                    $"on a.id = b.ida {fil};";
+                var fil = string.IsNullOrEmpty(filterbyid) ? "" : $" where a.idAtencion = {filterbyid}";
+                var SQL = "select a.idAtencion, a.Empleado, b.usuario, b.Contraseña, a.Departamento, b.rol from Atencion a inner join " +
+                    $"UsuariosTickets b on a.idAtencion = b.idusuarios{fil};";
                 SqlDataAdapter da = new SqlDataAdapter(SQL, getcon());
                 DataTable dt = new DataTable();
                 da.Fill(dt);
                 if (dt.Rows.Count > 0)
                 {
                     foreach (DataRow dr in dt.Rows)
-                        users.Add(new user_register
+                        users.Add(new registro
                         {
-                            id = int.Parse($"{dr[0]}"),
-                            name = $"{dr[1]}",
-                            lastname = $"{dr[2]}",
-                            phone = $"{dr[3]}",
-                            email = $"{dr[4]}",
-                            username = $"{dr[6]}",
-                            department = $"{dr[5]}",
-                            roles = String.Join(",", get_roles($"{dr[0]}"))
-                        }); ;
+                            idatencion = int.Parse($"{dr[0]}"),
+                            empleado = $"{dr[1]}",
+                            usuario = $"{dr[2]}",
+                            contrasena = $"{dr[3]}",
+                            departamento = $"{dr[4]}",
+                            rol = $"{dr[5]}",
+                            departamentos = get_departments(),
+                            roles = get_roles()
+                        });
                 }
             }
             catch (Exception ex)

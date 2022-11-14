@@ -14,28 +14,36 @@ namespace incidents.Controllers
         {
             if (msg != null) ViewBag.Message = msg.message;
             var obj = new registro();
-            obj.departments = db.get_departments();
+            obj.departamentos = db.get_departments();
+            obj.roles = db.get_roles();
             return View(obj);
         }
         public ActionResult<response_sql> SaveNewRegister(registro usr)
         {
-            var status = db.Save_New_User(usr);
-            response_sql resp = new response_sql
+            if (string.IsNullOrEmpty(usr.empleado))
             {
-                valor = usr.name,
-            };
-            switch (status)
-            {
-                case "error": resp.message = "with error, can't create account"; break;
-                case "privileges": resp.message = "error to add privileges"; break;
-                case "account": resp.message = "error to create account"; break;
-                case "duplicate": resp.message = "error account duplicated"; break;
-                default: resp.message = "account successful"; break;
+                return RedirectToAction("Register", "Admin", new response_sql { message = "Some fields are required"});
             }
-            if (resp.message.Contains("success"))
-                return RedirectToAction("Success", "Admin", resp);
             else
-                return RedirectToAction("Register", "Admin", resp);
+            {
+                var status = db.Save_New_User(usr);
+                response_sql resp = new response_sql
+                {
+                    valor = usr.empleado,
+                };
+                switch (status)
+                {
+                    case "error": resp.message = "with error, can't create account"; break;
+                    case "privileges": resp.message = "error to add privileges"; break;
+                    case "account": resp.message = "error to create account"; break;
+                    case "duplicate": resp.message = "error account duplicated"; break;
+                    default: resp.message = "account successful"; break;
+                }
+                if (resp.message.Contains("success"))
+                    return RedirectToAction("Success", "Admin", resp);
+                else
+                    return RedirectToAction("Register", "Admin", resp);
+            }
         }
         public ActionResult<response_sql> Success(response_sql obj)
         {

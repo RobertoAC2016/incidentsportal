@@ -18,9 +18,9 @@ namespace incidents.Controllers
             return View(tts);
         }
         //[PermisosRol("admin")]
-        public ActionResult<List<user_register>> Users()
+        public ActionResult<List<registro>> Users()
         {
-            List<user_register> users = db.get_users();
+            List<registro> users = db.get_users();
             return View(users);
         }
     }

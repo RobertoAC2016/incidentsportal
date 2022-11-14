@@ -1,7 +1,7 @@
 ﻿@model incidents.Models.registro
 
 <div class="row">
-    <div class="col-12 text-center" style="color:red;">
+    <div class="col-12 text-center" style="color:red;font-weight:bold;">
         @ViewBag.Message
     </div>
 </div>
@@ -19,80 +19,107 @@
                         <form asp-action="SaveNewRegister">
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                             <div class="form-group">
-                                <label asp-for="name" class="control-label"></label>
+                                <label class="control-label">Empleado</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="bi bi-person"></i>
                                     </span>
-                                    <input asp-for="name" class="form-control" />
+                                    <input asp-for="empleado" class="form-control" />
                                 </div>
-                                <span asp-validation-for="name" class="text-danger"></span>
+                                <span asp-validation-for="empleado" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="lastname" class="control-label"></label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">
-                                        <i class="bi bi-type"></i>
-                                    </span>
-                                    <input asp-for="lastname" class="form-control" />
-                                </div>
-                                <span asp-validation-for="lastname" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="phone" class="control-label"></label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">
-                                        <i class="bi bi-telephone"></i>
-                                    </span>
-                                    <input asp-for="phone" class="form-control" />
-                                </div>
-                                <span asp-validation-for="phone" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="email" class="control-label"></label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">
-                                        <i class="bi bi-envelope"></i>
-                                    </span>
-                                    <input asp-for="email" class="form-control" type="email" />
-                                </div>
-                                <span asp-validation-for="email" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="username" class="control-label"></label>
+                                <label class="control-label">Usuario</label>
+                                <label asp-for="usuario" class="control-label"></label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="bi bi-file-person-fill"></i>
                                     </span>
-                                    <input asp-for="username" class="form-control" />
+                                    <input asp-for="usuario" class="form-control" />
                                 </div>
-                                <span asp-validation-for="username" class="text-danger"></span>
+                                <span asp-validation-for="usuario" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="password" class="control-label"></label>
+                                <label class="control-label">Contraseña</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="bi bi-three-dots"></i>
                                     </span>
-                                    <input asp-for="password" class="form-control" type="password" />
+                                    <input asp-for="contrasena" class="form-control" type="password" />
                                 </div>
-                                <span asp-validation-for="password" class="text-danger"></span>
+                                <span asp-validation-for="contrasena" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label class="control-label">Department</label>
+                                <label class="control-label">Entrada</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-calendar"></i>
+                                    </span>
+                                    <input asp-for="entrada" class="form-control" type="datetime-local" />
+                                </div>
+                                <span asp-validation-for="entrada" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Salida</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-calendar"></i>
+                                    </span>
+                                    <input asp-for="salida" class="form-control" type="datetime-local" />
+                                </div>
+                                <span asp-validation-for="salida" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Entrada comida</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-calendar"></i>
+                                    </span>
+                                    <input asp-for="entrada_comida" class="form-control" type="datetime-local" />
+                                </div>
+                                <span asp-validation-for="entrada_comida" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Salida comida</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-calendar"></i>
+                                    </span>
+                                    <input asp-for="salida_comida" class="form-control" type="datetime-local" />
+                                </div>
+                                <span asp-validation-for="salida_comida" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Departamento</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="bi bi-back"></i>
                                     </span>
-                                    <select asp-for="department" class="form-control">
+                                    <select asp-for="departamento" class="form-control">
                                         <option value="">Select as option</option>
-                                        @foreach (department d in Model.departments)
+                                        @foreach (var d in Model.departamentos)
                                         {
-                                            <option value="@d.name">@d.name</option>
+                                            <option value="@d">@d</option>
                                         }
                                     </select>
                                 </div>
-                                <span asp-validation-for="department" class="text-danger"></span>
+                                <span asp-validation-for="departamento" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Rol</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-back"></i>
+                                    </span>
+                                    <select asp-for="rol" class="form-control">
+                                        <option value="">Select as option</option>
+                                        @foreach (var d in Model.roles)
+                                        {
+                                            <option value="@d">@d</option>
+                                        }
+                                    </select>
+                                </div>
+                                <span asp-validation-for="rol" class="text-danger"></span>
                             </div>
                             <div class="row">
                                 &nbsp;
