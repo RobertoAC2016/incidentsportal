@@ -201,14 +201,16 @@ namespace incidents.Models
             try
             {
                 var fil = string.IsNullOrEmpty(filterbyid) ? "" : $" where a.idAtencion = {filterbyid}";
-                var SQL = "select a.idAtencion, a.Empleado, b.usuario, b.Contraseña, a.Departamento, b.rol from Atencion a inner join " +
-                    $"UsuariosTickets b on a.idAtencion = b.idusuarios{fil};";
+                var SQL = "select a.idAtencion, a.Empleado, b.usuario, b.Contraseña, a.Departamento, b.rol, c.entrada, c.salida, c.comida_in, c.comida_out from Atencion a inner join " +
+                    $"UsuariosTickets b on a.idAtencion = b.idusuarios inner join Horarios c on a.idAtencion = c.idAtencion{fil};";
                 SqlDataAdapter da = new SqlDataAdapter(SQL, getcon());
                 DataTable dt = new DataTable();
                 da.Fill(dt);
                 if (dt.Rows.Count > 0)
                 {
                     foreach (DataRow dr in dt.Rows)
+                    {
+                        String fmt = "HH:mm";
                         users.Add(new registro
                         {
                             idatencion = int.Parse($"{dr[0]}"),
@@ -218,8 +220,13 @@ namespace incidents.Models
                             departamento = $"{dr[4]}",
                             rol = $"{dr[5]}",
                             departamentos = get_departments(),
-                            roles = get_roles()
+                            roles = get_roles(),
+                            entrada = DateTime.Parse($"{dr[6]}").ToString(fmt),
+                            salida = DateTime.Parse($"{dr[7]}").ToString(fmt),
+                            entrada_comida = DateTime.Parse($"{dr[8]}").ToString(fmt),
+                            salida_comida = DateTime.Parse($"{dr[9]}").ToString(fmt),
                         });
+                    }
                 }
             }
             catch (Exception ex)
@@ -246,6 +253,29 @@ namespace incidents.Models
             {
             }
             return role;
+        }
+        public bool delete_user(String id)
+        {
+            bool status = true;
+            try
+            {
+                CON = getcon();
+                var SQL = $"delete from Atencion Where idAtencion = {id};" +
+                    $"delete from UsuariosTickets Where idUsuarios = {id};" +
+                    $"delete from Horarios Where idAtencion = {id};select 1;";
+                SqlDataAdapter da = new SqlDataAdapter(SQL, CON);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                if (dt.Rows.Count <= 0)
+                {
+                    status = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                status = false;
+            }
+            return status;
         }
     }
 }

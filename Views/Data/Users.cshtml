@@ -55,17 +55,17 @@
             </td>
             <td>
                 <div class="btn btn-secondary">
-                    <a href="@Url.ActionLink("Edit", "Data", new {  id=item.idatencion  })" class="text-white" style="text-decoration:none;">
+                        <a href="@Url.ActionLink("Edit", "Data", new registro{ idatencion=item.idatencion  })" class="text-white" style="text-decoration:none;">
                         <i class="bi bi-pencil-square"></i>
                     </a>
                 </div>
                 <div class="btn btn-info">
-                    <a href="@Url.ActionLink("Details", "Data", new {  id=item.idatencion  })" class="text-white" style="text-decoration:none;">
+                        <a href="@Url.ActionLink("Details", "Data", new registro{ idatencion=item.idatencion  })" class="text-white" style="text-decoration:none;">
                         <i class="bi bi-journal-text"></i>
                     </a>
                 </div>
                 <div class="btn btn-danger">
-                    <a href="@Url.ActionLink("Delete", "Data", new {  id=item.idatencion  })" class="text-white" style="text-decoration:none;">
+                        <a href="@Url.ActionLink("Delete", "Data", new registro{ idatencion=item.idatencion  })" class="text-white" style="text-decoration:none;">
                         <i class="bi bi-trash"></i>
                     </a>
                 </div>
