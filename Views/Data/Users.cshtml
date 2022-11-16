@@ -1,13 +1,20 @@
 ﻿@model IEnumerable<registro>
 
-<p>
-    <div class="btn btn-primary">
-        <a asp-action="Create" class="text-white" style="text-decoration:none;">
-            <i class="bi bi-person-plus"></i>
-            New user
-        </a>
-    </div>
-</p>
+<div class="row">
+    <form asp-action="Users" method="post">
+        <div class="col-lg-6 text-center offset-6">
+            <div class="form-group">
+                <div class="input-group mb-3">
+                    <span class="input-group-text btn btn-primary">
+                        <i class="bi bi-search"></i>
+                        <input type="submit" value="Search" class="text-white" style="border-top: 0px;border-right: 0px;border-bottom: 0px;border-left: 0px;background-color:transparent;" />
+                    </span>
+                    <input type="text" class="form-control" placeholder="Search" name="search" id="search" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -55,12 +62,12 @@
             </td>
             <td>
                 <div class="btn btn-secondary">
-                        <a href="@Url.ActionLink("Edit", "Data", new registro{ idatencion=item.idatencion  })" class="text-white" style="text-decoration:none;">
+                        <a href="@Url.ActionLink("Edit", "Data", new { id = item.idatencion  })" class="text-white" style="text-decoration:none;">
                         <i class="bi bi-pencil-square"></i>
                     </a>
                 </div>
                 <div class="btn btn-info">
-                        <a href="@Url.ActionLink("Details", "Data", new registro{ idatencion=item.idatencion  })" class="text-white" style="text-decoration:none;">
+                        <a href="@Url.ActionLink("Details", "Data", new { id=item.idatencion  })" class="text-white" style="text-decoration:none;">
                         <i class="bi bi-journal-text"></i>
                     </a>
                 </div>

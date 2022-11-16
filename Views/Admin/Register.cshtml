@@ -9,9 +9,11 @@
     <div class="col-md-3">&nbsp;</div>
     <div class="col-md-6">
 
-        <div class="card">
-            <div class="card-header">
-                Register new user account
+        <div class="card" style="width: 28rem;">
+            <div class="card card-header">
+                <h3>
+                    Register new user account
+                </h3>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -55,7 +57,7 @@
                                     <span class="input-group-text">
                                         <i class="bi bi-calendar"></i>
                                     </span>
-                                    <input asp-for="entrada" class="form-control" type="datetime-local" />
+                                    <input asp-for="entrada" class="form-control" type="time" />
                                 </div>
                                 <span asp-validation-for="entrada" class="text-danger"></span>
                             </div>
@@ -65,27 +67,27 @@
                                     <span class="input-group-text">
                                         <i class="bi bi-calendar"></i>
                                     </span>
-                                    <input asp-for="salida" class="form-control" type="datetime-local" />
+                                    <input asp-for="salida" class="form-control" type="time" />
                                 </div>
                                 <span asp-validation-for="salida" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label class="control-label">Entrada comida</label>
+                                <label class="control-label">Entrada a comida</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="bi bi-calendar"></i>
                                     </span>
-                                    <input asp-for="entrada_comida" class="form-control" type="datetime-local" />
+                                    <input asp-for="entrada_comida" class="form-control" type="time" />
                                 </div>
                                 <span asp-validation-for="entrada_comida" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label class="control-label">Salida comida</label>
+                                <label class="control-label">Salida de comida</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="bi bi-calendar"></i>
                                     </span>
-                                    <input asp-for="salida_comida" class="form-control" type="datetime-local" />
+                                    <input asp-for="salida_comida" class="form-control" type="time" />
                                 </div>
                                 <span asp-validation-for="salida_comida" class="text-danger"></span>
                             </div>
@@ -95,7 +97,7 @@
                                     <span class="input-group-text">
                                         <i class="bi bi-back"></i>
                                     </span>
-                                    <select asp-for="departamento" class="form-control">
+                                    <select asp-for="departamento" class="form-control form-select">
                                         <option value="">Select as option</option>
                                         @foreach (var d in Model.departamentos)
                                         {
@@ -109,9 +111,9 @@
                                 <label class="control-label">Rol</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
-                                        <i class="bi bi-back"></i>
+                                        <i class="bi bi-people-fill"></i>
                                     </span>
-                                    <select asp-for="rol" class="form-control">
+                                    <select asp-for="rol" class="form-control form-select">
                                         <option value="">Select as option</option>
                                         @foreach (var d in Model.roles)
                                         {
@@ -127,7 +129,7 @@
                             <div class="row">
                                 <div class="col-6 text-center">
                                     <div class="btn btn-info">
-                                    <a asp-controller="Home" asp-action="Index" class="text-white" style="text-decoration:none;">
+                                        <a asp-controller="Home" asp-action="Index" class="text-white" style="text-decoration:none;">
                                             <i class="bi bi-caret-left"></i>
                                             Back
                                         </a>

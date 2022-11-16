@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Runtime.Intrinsics.X86;
 
 namespace incidents.Models
 {
@@ -62,8 +63,8 @@ namespace incidents.Models
                             $"({ida}, '{usr.usuario}', '{usr.contrasena}', '{usr.rol}'); " +
                             "SET IDENTITY_INSERT UsuariosTickets OFF; " +
                             "insert into Horarios (idAtencion, entrada, salida, comida_in, comida_out, estatus) values " +
-                            $"({ida}, '{usr.entrada.ToString().Replace("T", " ")}', '{usr.salida.ToString().Replace("T", " ")}', " +
-                            $"'{usr.entrada_comida.ToString().Replace("T", " ")}', '{usr.salida_comida.ToString().Replace("T", " ")}', 'activo');" +
+                            $"({ida}, '1900-01-01 {usr.entrada}', '1900-01-01 {usr.salida}', " +
+                            $"'1900-01-01 {usr.entrada_comida}', '1900-01-01 {usr.salida_comida}', 'activo');" +
                             $"select SCOPE_IDENTITY();";
                         da = new SqlDataAdapter(SQL, CON);
                         dt = new DataTable();
@@ -195,14 +196,41 @@ namespace incidents.Models
             }
             return tts;
         }
-        public List<registro> get_users(String filterbyid = "")
+        public List<registro> get_users(String filterbyid = "", String fmt = "HH:mm")
         {
             List<registro> users = new List<registro>();
             try
             {
                 var fil = string.IsNullOrEmpty(filterbyid) ? "" : $" where a.idAtencion = {filterbyid}";
                 var SQL = "select a.idAtencion, a.Empleado, b.usuario, b.Contraseña, a.Departamento, b.rol, c.entrada, c.salida, c.comida_in, c.comida_out from Atencion a inner join " +
-                    $"UsuariosTickets b on a.idAtencion = b.idusuarios inner join Horarios c on a.idAtencion = c.idAtencion{fil};";
+                    $"UsuariosTickets b on a.idAtencion = b.idusuarios inner join Horarios c on a.idAtencion = c.idAtencion{fil} order by a.idAtencion desc;";
+                users = get_users_filtered(SQL, fmt);
+            }
+            catch (Exception ex)
+            {
+            }
+            return users;
+        }
+        public List<registro> get_filter_users(String filter = "", String fmt = "HH:mm")
+        {
+            List<registro> users = new List<registro>();
+            try
+            {
+                var fil = string.IsNullOrEmpty(filter) ? "" : $" where a.Empleado like '%{filter}%' or a.Departamento like '%{filter}%'";
+                var SQL = "select a.idAtencion, a.Empleado, b.usuario, b.Contraseña, a.Departamento, b.rol, c.entrada, c.salida, c.comida_in, c.comida_out from Atencion a inner join " +
+                    $"UsuariosTickets b on a.idAtencion = b.idusuarios inner join Horarios c on a.idAtencion = c.idAtencion{fil} order by a.idAtencion desc;";
+                users = get_users_filtered(SQL, fmt);
+            }
+            catch (Exception ex)
+            {
+            }
+            return users;
+        }
+        private List<registro> get_users_filtered(string SQL, String fmt = "")
+        {
+            List<registro> users = new List<registro>();
+            try
+            {
                 SqlDataAdapter da = new SqlDataAdapter(SQL, getcon());
                 DataTable dt = new DataTable();
                 da.Fill(dt);
@@ -210,7 +238,6 @@ namespace incidents.Models
                 {
                     foreach (DataRow dr in dt.Rows)
                     {
-                        String fmt = "HH:mm";
                         users.Add(new registro
                         {
                             idatencion = int.Parse($"{dr[0]}"),
@@ -274,6 +301,46 @@ namespace incidents.Models
             catch (Exception ex)
             {
                 status = false;
+            }
+            return status;
+        }
+        /// <summary>
+        /// Metodo para actualizar los datos del usuario q llegan del formulario de edicion
+        /// </summary>
+        /// <param name="usr"></param>
+        /// <returns></returns>
+        internal string Update_Data_User(registro usr)
+        {
+            String status = "ok";
+            try
+            {
+                CON = getcon();
+                var SQL = $"select idAtencion from Atencion where idAtencion = '{usr.idatencion}';";
+                SqlDataAdapter da = new SqlDataAdapter(SQL, CON);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                if (dt.Rows.Count <= 0)
+                {
+                    status = "notexist";
+                }
+                else
+                {
+                    SQL = $"Update Atencion set Empleado = '{usr.empleado}', Departamento = '{usr.departamento}' where idAtencion = {usr.idatencion};" +
+                        $"Update UsuariosTickets Set [Contraseña] = '{usr.contrasena}', Rol = '{usr.rol}' Where idUsuarios = {usr.idatencion};" +
+                        $"Update Horarios Set entrada = '1900-01-01 {usr.entrada}', salida = '1900-01-01 {usr.salida}', comida_in = '1900-01-01 {usr.entrada_comida}', " +
+                        $"comida_out = '1900-01-01 {usr.salida_comida}' Where idAtencion = {usr.idatencion};select 1;";
+                    da = new SqlDataAdapter(SQL, CON);
+                    dt = new DataTable();
+                    da.Fill(dt);
+                    if (dt.Rows.Count <= 0)
+                    {
+                        status = "updateerror";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                status = "error";
             }
             return status;
         }

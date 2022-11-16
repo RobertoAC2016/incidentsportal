@@ -1,0 +1,180 @@
+﻿@model incidents.Models.registro
+
+<div class="row">
+    <div class="col-md-3">&nbsp;</div>
+    <div class="col-md-6">
+
+        <div class="row">
+            <div class="col-12 text-center" style="color:red;">
+                @ViewBag.Message
+            </div>
+        </div>
+    <div class="card" style="width: 28rem;">
+        <div class="card card-header">
+            <h3>
+                Edicion de datos, usuario :
+                <b>
+                    @Html.DisplayFor(model => model.usuario)
+                </b>
+            </h3>
+        </div>
+        <div class="card card-body">
+
+            <div>
+                <form asp-action="UpdateUserData">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                Id
+                            </span>
+                            <input asp-for="idatencion" class="form-control" readonly/>
+                        </div>
+                        <input asp-for="idatencion" type="hidden"/>
+                    </div>
+                    <div class="form-group">
+                        Empleado
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="bi bi-person"></i>
+                            </span>
+                            <input asp-for="empleado" class="form-control" />
+                        </div>
+                        <span asp-validation-for="empleado" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        Usuario
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="bi bi-file-person-fill"></i>
+                            </span>
+                            <input asp-for="usuario" class="form-control" readonly >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        Contraseña
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="bi bi-three-dots"></i>
+                            </span>
+                            <input asp-for="contrasena" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        Departamento
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="bi bi-back"></i>
+                            </span>
+                            <select asp-for="departamento" class="form-control form-select">
+                                <option value="">Select as option</option>
+                                @foreach (var d in Model.departamentos)
+                                {
+                                    if (@Model.departamento.Equals(d))
+                                    {
+                                        <option value="@d" selected>@d</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@d">@d</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <span asp-validation-for="departamento" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        Rol
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="bi bi-people-fill"></i>
+                            </span>
+                            <select asp-for="rol" class="form-control form-select">
+                                <option value="">Select as option</option>
+                                @foreach (var d in Model.roles)
+                                {
+                                    if (@Model.rol.Equals(d))
+                                    {
+                                        <option value="@d" selected>@d</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@d">@d</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <span asp-validation-for="rol" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Entrada</label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="bi bi-calendar"></i>
+                            </span>
+                            <input asp-for="entrada" class="form-control" type="time" />
+                        </div>
+                        <span asp-validation-for="entrada" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Salida</label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="bi bi-calendar"></i>
+                            </span>
+                            <input asp-for="salida" class="form-control" type="time" />
+                        </div>
+                        <span asp-validation-for="salida" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Entrada a comida</label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="bi bi-calendar"></i>
+                            </span>
+                            <input asp-for="entrada_comida" class="form-control" type="time" />
+                        </div>
+                        <span asp-validation-for="entrada_comida" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Salida de comida</label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="bi bi-calendar"></i>
+                            </span>
+                            <input asp-for="salida_comida" class="form-control" type="time" />
+                        </div>
+                        <span asp-validation-for="salida_comida" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-6 text-center">
+                                <div class="btn btn-info">
+                                    <a asp-controller="Data" asp-action="Users" class="text-white" style="text-decoration:none;">
+                                        <i class="bi bi-caret-left"></i>
+                                        Back
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-6 text-md-center">
+                                <div class="btn btn-primary">
+                                    <i class="bi bi-cloud-arrow-down"></i>
+                                    <input type="submit" value="Save" class="text-white" style="border-top: 0px;border-right: 0px;border-bottom: 0px;border-left: 0px;background-color:transparent;" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+    <div class="col-md-3">&nbsp;</div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
