@@ -3,136 +3,61 @@
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 <link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
-@*
-<div class="row">
-    <form asp-action="Index" method="post">
-        <div class="col-lg-6"></div>
-        <div class="col-lg-6 text-center offset-6">
-            <div class="form-group">
-                <div class="input-group mb-3">
-                    <span class="input-group-text btn btn-primary">
-                        <i class="bi bi-search"></i>
-                        <input type="submit" value="Search" class="text-white" style="border-top: 0px;border-right: 0px;border-bottom: 0px;border-left: 0px;background-color:transparent;" />
-                    </span>
-                    <input type="text" class="form-control" placeholder="Search" name="search" id="search" />
-                </div>
-            </div>
-        </div>
-    </form>
-</div>*@
 
-<table id="dttickets" class="display" width="100%"></table>
 
 <div class="row">
-    <div class="col-sm-12">
-        <script type="text/javascript">
-
-            var dataSet = [
-            @foreach (var item in Model)
-                {
-                    @:[@(item.id), '@(item.from)', '@(item.to)', '@(item.importance)', '@(item.subject)', '@(item.message)', '@(item.date)', '@(item.status)'],
-                }
-            ]
-            $("#dttickets").DataTable({
-                data: dataSet,
-                columns: [
-                    { title: 'Id' },
-                    { title: 'From' },
-                    { title: 'To' },
-                    { title: 'Importance' },
-                    { title: 'Subject' },
-                    { title: 'Message' },
-                    { title: 'Date' },
-                    { title: 'Status' },
-                    {
-                        data: null,
-                        render: function (data, type, row) {
-                            return "<div class='btn btn-secondary'>"
-                                + "<a href='#' class='text-white' style = 'text-decoration: none;' onclick = 'goedit(this);' >"
-                                + "<i class='bi bi-pencil-square'> </i>"
-                                + "</a>"
-                                + "</div>"
-                                + "<div class='btn btn-info'>"
-                                + "<a href='#' class='text-white' style = 'text-decoration: none;' onclick = 'goview(this);' >"
-                                + "<i class='bi bi-journal-text' > </i>"
-                                + "</a>"
-                                + "</div>";
-                        }
-                    }
-                ],
-            });
-            function goview(ctl) {
-                _row = $(ctl).parents("tr");
-                var cols = _row.children("td");
-                document.location = "Data/ViewTT/" + cols[0].innerHTML;
-            }
-            function goedit(ctl) {
-                _row = $(ctl).parents("tr");
-                var cols = _row.children("td");
-                document.location = "Data/EditTicket/" + cols[0].innerHTML;
-            }
-
-        </script>
-@*
-<table class="table">
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>From</th>
-            <th>To</th>
-            <th>Importance</th>
-            <th>Subject</th>
-            <th>Message</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.from)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.to)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.importance)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.subject)
-            </td>
-            <td>
-                @if (item.message.Length > 50)
-                {
-                    @item.message.Substring(0, 49)
-                }
-                else
-                {
-                    @item.message
-                    ;
-                }
-                @Html.DisplayFor(modelItem => item.message.Length > 40 ? item.message.Substring(0, 39) : item.message)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.status)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", item.id)
-                @Html.ActionLink("Details", "Details", item.id) 
-                @Html.ActionLink("Delete", "Delete", item.id)
-            </td>
-        </tr>
-}
-    </tbody>
-</table>*@
-
+    <div class="col-12">
+        <table id="dttickets" class="display" width="100%"></table>
     </div>
 </div>
+<script type="text/javascript">
+
+    var dataSet = [
+    @foreach (var item in Model)
+        {
+        @:[@(item.id), '@(item.from)', '@(item.to)', '@(item.importance)', '@(item.subject)', '@(item.message.Length > 50 ? item.message.Substring(0, 49) : item.message)', '@(item.date)', '@(item.status)'],
+        }
+    ]
+    $("#dttickets").DataTable({
+        data: dataSet,
+        search:{
+
+        },
+        columns: [
+            { title: 'Id' },
+            { title: 'From' },
+            { title: 'To' },
+            { title: 'Importance' },
+            { title: 'Subject' },
+            { title: 'Message' },
+            { title: 'Date' },
+            { title: 'Status' },
+            {
+                data: null,
+                render: function (data, type, row) {
+                    return "<div class='btn btn-secondary'>"
+                        + "<a href='#' class='text-white' style = 'text-decoration: none;' onclick = 'goedit(this);' >"
+                        + "<i class='bi bi-pencil-square'> </i>"
+                        + "</a>"
+                        + "</div>"
+                        + "<div class='btn btn-info'>"
+                        + "<a href='#' class='text-white' style = 'text-decoration: none;' onclick = 'goview(this);' >"
+                        + "<i class='bi bi-journal-text' > </i>"
+                        + "</a>"
+                        + "</div>";
+                }
+            }
+        ],
+    });
+    function goview(ctl) {
+        _row = $(ctl).parents("tr");
+        var cols = _row.children("td");
+        document.location = "Data/ViewTT/" + cols[0].innerHTML;
+    }
+    function goedit(ctl) {
+        _row = $(ctl).parents("tr");
+        var cols = _row.children("td");
+        document.location = "Data/EditTicket/" + cols[0].innerHTML;
+    }
+
+</script>

@@ -35,7 +35,7 @@ namespace incidents.Models
             try
             {
                 CON = getcon();
-                var SQL = "select a.idAtencion from Atencion a inner join UsuariosTickets b on a.idAtencion = b.idusuarios Where " +
+                var SQL = "select a.idAtencion from Atencion a inner join UsusariosTickets b on a.idAtencion = b.idusuarios Where " +
                     $"b.usuario = '{usr.usuario}';";
                 SqlDataAdapter da = new SqlDataAdapter(SQL, CON);
                 DataTable dt = new DataTable();
@@ -59,10 +59,10 @@ namespace incidents.Models
                     {
                         var ida = dt.Rows[0][0];
                         //var skey = SEC.Encrypt(usr.password);
-                        SQL = "SET IDENTITY_INSERT UsuariosTickets ON;" +
-                            "INSERT into UsuariosTickets ([idUsuarios], [Usuario], [Contraseña], [Rol]) VALUES " +
+                        SQL = "SET IDENTITY_INSERT UsusariosTickets ON;" +
+                            "INSERT into UsusariosTickets ([idUsuarios], [Usuario], [Contraseña], [Rol]) VALUES " +
                             $"({ida}, '{usr.usuario}', '{usr.contrasena}', '{usr.rol}'); " +
-                            "SET IDENTITY_INSERT UsuariosTickets OFF; " +
+                            "SET IDENTITY_INSERT UsusariosTickets OFF; " +
                             "insert into Horarios (idAtencion, entrada, salida, comida_in, comida_out, estatus) values " +
                             $"({ida}, '1900-01-01 {usr.entrada}', '1900-01-01 {usr.salida}', " +
                             $"'1900-01-01 {usr.entrada_comida}', '1900-01-01 {usr.salida_comida}', 'activo');" +
@@ -110,7 +110,7 @@ namespace incidents.Models
             try
             {
                 CON = getcon();
-                var SQL = $"select top 1 idusuarios from UsuariosTickets where usuario = '{usr.username}';";
+                var SQL = $"select top 1 idusuarios from UsusariosTickets where usuario = '{usr.username}';";
                 SqlDataAdapter da = new SqlDataAdapter(SQL, CON);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
@@ -119,7 +119,7 @@ namespace incidents.Models
                     var ida = $"{dt.Rows[0][0]}";
                     var skey = usr.password;
                     SQL = "select a.Empleado, a.Departamento, b.rol from Atencion a inner join " +
-                        "UsuariosTickets b on a.idAtencion = b.idusuarios where " +
+                        "UsusariosTickets b on a.idAtencion = b.idusuarios where " +
                         $"b.usuario = '{usr.username}' and b.Contraseña = '{skey}';";
                     da = new SqlDataAdapter(SQL, CON); 
                     dt = new DataTable();
@@ -178,7 +178,7 @@ namespace incidents.Models
             try
             {
                 var fil = string.IsNullOrEmpty(filterbyid) ? "" : $" and idticket = {filterbyid}";
-                var SQL = $"select idticket, [Date], [from], [to], importance, subject, message, [Path Attachment], [Attachment To Base 64] " +
+                var SQL = $"select idticket, [Date], [from], [to], importance, subject, message " +
                     $"from Ticket where date >= '{DateTime.Now.AddDays(-30)}'{fil} order by idticket desc;";
                 SqlDataAdapter da = new SqlDataAdapter(SQL, getcon());
                 DataTable dt = new DataTable();
@@ -195,8 +195,8 @@ namespace incidents.Models
                             importance = $"{dr[4]}",
                             subject = $"{dr[5]}",
                             message = $"{dr[6]}",
-                            path = $"{dr[7]}",
-                            base64 = (byte[])dr[8],
+                            //path = $"{dr[7]}",
+                            //base64 = (byte[])dr[8],
                         });
                 }
             }
@@ -212,7 +212,7 @@ namespace incidents.Models
             {
                 var fil = string.IsNullOrEmpty(filterbyid) ? "" : $" where a.idAtencion = {filterbyid}";
                 var SQL = "select a.idAtencion, a.Empleado, b.usuario, b.Contraseña, a.Departamento, b.rol, c.entrada, c.salida, c.comida_in, c.comida_out from Atencion a inner join " +
-                    $"UsuariosTickets b on a.idAtencion = b.idusuarios inner join Horarios c on a.idAtencion = c.idAtencion{fil} order by a.idAtencion desc;";
+                    $"UsusariosTickets b on a.idAtencion = b.idusuarios inner join Horarios c on a.idAtencion = c.idAtencion{fil} order by a.idAtencion desc;";
                 users = get_users_filtered(SQL, fmt);
             }
             catch (Exception ex)
@@ -227,7 +227,7 @@ namespace incidents.Models
             {
                 var fil = string.IsNullOrEmpty(filter) ? "" : $" where a.Empleado like '%{filter}%' or a.Departamento like '%{filter}%'";
                 var SQL = "select a.idAtencion, a.Empleado, b.usuario, b.Contraseña, a.Departamento, b.rol, c.entrada, c.salida, c.comida_in, c.comida_out from Atencion a inner join " +
-                    $"UsuariosTickets b on a.idAtencion = b.idusuarios inner join Horarios c on a.idAtencion = c.idAtencion{fil} order by a.idAtencion desc;";
+                    $"UsusariosTickets b on a.idAtencion = b.idusuarios inner join Horarios c on a.idAtencion = c.idAtencion{fil} order by a.idAtencion desc;";
                 users = get_users_filtered(SQL, fmt);
             }
             catch (Exception ex)
@@ -297,7 +297,7 @@ namespace incidents.Models
             {
                 CON = getcon();
                 var SQL = $"delete from Atencion Where idAtencion = {id};" +
-                    $"delete from UsuariosTickets Where idUsuarios = {id};" +
+                    $"delete from UsusariosTickets Where idUsuarios = {id};" +
                     $"delete from Horarios Where idAtencion = {id};select 1;";
                 SqlDataAdapter da = new SqlDataAdapter(SQL, CON);
                 DataTable dt = new DataTable();
@@ -335,7 +335,7 @@ namespace incidents.Models
                 else
                 {
                     SQL = $"Update Atencion set Empleado = '{usr.empleado}', Departamento = '{usr.departamento}' where idAtencion = {usr.idatencion};" +
-                        $"Update UsuariosTickets Set [Contraseña] = '{usr.contrasena}', Rol = '{usr.rol}' Where idUsuarios = {usr.idatencion};" +
+                        $"Update UsusariosTickets Set [Contraseña] = '{usr.contrasena}', Rol = '{usr.rol}' Where idUsuarios = {usr.idatencion};" +
                         $"Update Horarios Set entrada = '1900-01-01 {usr.entrada}', salida = '1900-01-01 {usr.salida}', comida_in = '1900-01-01 {usr.entrada_comida}', " +
                         $"comida_out = '1900-01-01 {usr.salida_comida}' Where idAtencion = {usr.idatencion};select 1;";
                     da = new SqlDataAdapter(SQL, CON);
