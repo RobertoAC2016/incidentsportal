@@ -37,7 +37,7 @@ namespace incidents.Controllers
                     HttpContext.Session.SetString("username", obj.login);
                     HttpContext.Session.SetString("fullname", obj.name);
                     HttpContext.Session.SetString("role", obj.role);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Data");
                 }
             }
         }

@@ -1,5 +1,6 @@
 ﻿using incidents.Models;
 using incidents.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace incidents.Controllers
@@ -11,13 +12,13 @@ namespace incidents.Controllers
         {
             db = new DB(conf);
         }
-        //[PermisosRol("admin,supervisor,empleado")]
+        [PermisosRol("admin,supervisor,empleado")]
         public ActionResult<List<incident>> Index()
         {
             List<incident> tts = db.get_incidents();
             return View(tts);
         }
-        //[PermisosRol("admin")]
+        [PermisosRol("admin")]
         public ActionResult<List<registro>> Users(String search = null)
         {
             List<registro> users = new List<registro>();
@@ -31,6 +32,7 @@ namespace incidents.Controllers
             }
             return View(users);
         }
+        [PermisosRol("admin")]
         public ActionResult<registro> Details(String id)
         {
             List<registro> users = db.get_users(id);
@@ -39,6 +41,7 @@ namespace incidents.Controllers
             else
                 return RedirectToAction("Index", "Error");
         }
+        [PermisosRol("admin")]
         public ActionResult<registro> Delete(registro reg)
         {
             bool status = db.delete_user(reg.idatencion.ToString());
@@ -47,6 +50,7 @@ namespace incidents.Controllers
             else
                 return RedirectToAction("Index", "Error");
         }
+        [PermisosRol("admin")]
         public ActionResult<registro> Edit(String id)
         {
             if (!string.IsNullOrEmpty(id))
@@ -65,6 +69,7 @@ namespace incidents.Controllers
             else
                 return RedirectToAction("Index", "Error");
         }
+        [PermisosRol("admin")]
         public IActionResult UpdateUserData(registro reg)
         {
             TempData["msg"] = null;
@@ -83,6 +88,63 @@ namespace incidents.Controllers
             {
                 TempData["msg"] = msg;
                 return RedirectToAction($"Edit", "Data", reg.idatencion);
+            }
+        }
+        [PermisosRol("admin,supervisor,empleado")]
+        public ActionResult<incident> ViewTT(String id)
+        {
+            List<incident> tts = db.get_incidents(id);
+            if (tts.Count > 0)
+                return View(tts[0]);
+            else
+                return RedirectToAction("Index", "Error");
+        }
+        [PermisosRol("admin,supervisor,empleado")]
+        public ActionResult<incident> EditTicket(String id)
+        {
+            if (!string.IsNullOrEmpty(id))
+            {
+                List<incident> tts = db.get_incidents(id);
+                if (TempData["msg"] != null)
+                {
+                    ViewBag.Message = TempData["msg"];
+                    TempData["msg"] = null;
+                }
+                if (tts.Count > 0)
+                    return View(tts[0]);
+                else
+                    return RedirectToAction("Index", "Error");
+            }
+            else
+                return RedirectToAction("Index", "Error");
+        }
+        [PermisosRol("admin,supervisor,empleado")]
+        public IActionResult UpdateTicket(incident tt, IFormFile ttfile = null)
+        {
+            if (ttfile != null)
+            {
+                MemoryStream ms = new MemoryStream();
+                ttfile.CopyTo(ms);
+                byte[] bytes = ms.ToArray();
+                tt.base64 = bytes;
+                ms.Dispose();
+            }
+
+            TempData["msg"] = null;
+            var status = db.Update_Data_Incident(tt);
+            var msg = "";
+            switch (status)
+            {
+                case "error": msg = "Can't update ticket data"; break;
+                case "notexist": msg = "Ticket not exists"; break;
+                default: msg = ""; break;
+            }
+            if (string.IsNullOrEmpty(msg))
+                return RedirectToAction("Index", "Data");
+            else
+            {
+                TempData["msg"] = msg;
+                return RedirectToAction($"EditTicket", "Data", tt.id);
             }
         }
     }

@@ -1,7 +1,7 @@
 ﻿@model registro
 
 <div>
-    <h4>registro</h4>
+    <h4>Employee details</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-3">Id
@@ -81,6 +81,14 @@
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.idatencion }) |
-    <a asp-action="Users" asp-controller="Data">Back</a>
+    <div class="btn btn-info">
+        <a href="@Url.ActionLink("Users", "Data")" class="text-white" style="text-decoration:none;">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+    </div>
+    <div class="btn btn-primary">
+        <a href="@Url.ActionLink("Edit", "Data", new { id = Model.idatencion })" class="text-white" style="text-decoration:none;">
+            <i class="bi bi-pencil-square"></i>
+        </a>
+    </div>
 </div>

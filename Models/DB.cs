@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using NuGet.Protocol.Plugins;
+using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Runtime.Intrinsics.X86;
@@ -176,8 +177,9 @@ namespace incidents.Models
             List<incident> tts = new List<incident>();
             try
             {
-                var fil = string.IsNullOrEmpty(filterbyid) ? "" : $" where id = {filterbyid}";
-                var SQL = $"select * from Ticket{fil};";
+                var fil = string.IsNullOrEmpty(filterbyid) ? "" : $" and idticket = {filterbyid}";
+                var SQL = $"select idticket, [Date], [from], [to], importance, subject, message, [Path Attachment], [Attachment To Base 64] " +
+                    $"from Ticket where date >= '{DateTime.Now.AddDays(-30)}'{fil} order by idticket desc;";
                 SqlDataAdapter da = new SqlDataAdapter(SQL, getcon());
                 DataTable dt = new DataTable();
                 da.Fill(dt);
@@ -186,8 +188,15 @@ namespace incidents.Models
                     foreach (DataRow dr in dt.Rows)
                         tts.Add(new incident {
                             id = int.Parse($"{dr[0]}"),
-                            creation = DateTime.Parse($"{dr[1]}"),
-                            status = "active"
+                            date = DateTime.Parse($"{dr[1]}"),
+                            status = "active",
+                            from = $"{dr[2]}",
+                            to = $"{dr[3]}",
+                            importance = $"{dr[4]}",
+                            subject = $"{dr[5]}",
+                            message = $"{dr[6]}",
+                            path = $"{dr[7]}",
+                            base64 = (byte[])dr[8],
                         });
                 }
             }
@@ -309,7 +318,7 @@ namespace incidents.Models
         /// </summary>
         /// <param name="usr"></param>
         /// <returns></returns>
-        internal string Update_Data_User(registro usr)
+        public string Update_Data_User(registro usr)
         {
             String status = "ok";
             try
@@ -336,6 +345,46 @@ namespace incidents.Models
                     {
                         status = "updateerror";
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                status = "error";
+            }
+            return status;
+        }
+        public string Update_Data_Incident(incident tt)
+        {
+            String status = "ok";
+            try
+            {
+                CON = getcon();
+                var SQL = $"select idticket from Ticket where idticket = '{tt.id}';";
+                SqlDataAdapter da = new SqlDataAdapter(SQL, CON);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                if (dt.Rows.Count <= 0)
+                {
+                    status = "notexist";
+                }
+                else
+                {
+                    String subsql = tt.base64 != null ? ", [Attachment To Base 64]=@att " : "";
+                    SQL = "UPDATE Ticket SET [from]=@from, [to]=@to, importance=@imp, [subject]=@subject, " +
+                        $"[message]=@message{subsql} WHERE idticket=@id;";
+                    SqlCommand query = new SqlCommand(SQL, CON);
+
+                    query.Parameters.AddWithValue("@from", tt.from);
+                    query.Parameters.AddWithValue("@to", tt.to);
+                    query.Parameters.AddWithValue("@imp", tt.importance);
+                    query.Parameters.AddWithValue("@subject", tt.subject);
+                    query.Parameters.AddWithValue("@message", tt.message);
+                    if (tt.base64 != null)
+                    {
+                        query.Parameters.AddWithValue("@att", tt.base64);
+                    }
+                    query.Parameters.AddWithValue("@id", tt.id);
+                    query.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)

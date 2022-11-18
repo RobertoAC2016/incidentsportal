@@ -3,16 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace incidents.Models
 {
-    //public class register_user
-    //{
-    //    public int id { get; set; } = 0;
-    //    public string name { get; set; } = "";
-    //    public string lastname { get; set; } = "";
-    //    public string email { get; set; } = "";
-    //    public string phone { get; set; } = "";
-    //    public string department { get; set; } = "";
-    //    public string status { get; set; } = "new";
-    //}
     public class department
     {
         public int? id { get; set; }
@@ -60,7 +50,14 @@ namespace incidents.Models
     public class incident
     {
         public int id { get; set; }
-        public DateTime creation { get; set; }
+        public String from { get; set; }
+        public String to { get; set; }
+        public String importance { get; set; }
+        public String subject { get; set; }
+        public String message { get; set; }
+        public String path { get; set; }
+        public byte[] base64 { get; set; }
+        public DateTime date { get; set; }
         public String status { get; set; } = "active";
     }
 }
