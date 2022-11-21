@@ -50,14 +50,16 @@ namespace incidents.Models
     public class incident
     {
         public int id { get; set; }
-        public String from { get; set; }
-        public String to { get; set; }
-        public String importance { get; set; }
-        public String subject { get; set; }
-        public String message { get; set; }
-        public String path { get; set; }
-        public byte[] base64 { get; set; }
+        public String? from { get; set; }
+        public String? to { get; set; }
+        public String? importance { get; set; }
+        public String? subject { get; set; }
+        public String? message { get; set; }
+        public String? path { get; set; }
+        public String? type { get; set; }
+        public byte[]? base64 { get; set; }
         public DateTime date { get; set; }
         public String status { get; set; } = "active";
+        public List<String>? estados { get; set; }
     }
 }

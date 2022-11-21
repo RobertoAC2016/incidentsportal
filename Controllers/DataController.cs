@@ -13,9 +13,9 @@ namespace incidents.Controllers
             db = new DB(conf);
         }
         [PermisosRol("admin,supervisor,empleado")]
-        public ActionResult<List<incident>> Index()
+        public ActionResult<List<incident>> Index(String filter = "")
         {
-            List<incident> tts = db.get_incidents();
+            List<incident> tts = db.get_incidents(filter);
             return View(tts);
         }
         [PermisosRol("admin")]
@@ -111,7 +111,10 @@ namespace incidents.Controllers
                     TempData["msg"] = null;
                 }
                 if (tts.Count > 0)
+                {
+                    tts[0].estados = db.get_estados();
                     return View(tts[0]);
+                }
                 else
                     return RedirectToAction("Index", "Error");
             }
@@ -119,17 +122,8 @@ namespace incidents.Controllers
                 return RedirectToAction("Index", "Error");
         }
         [PermisosRol("admin,supervisor,empleado")]
-        public IActionResult UpdateTicket(incident tt, IFormFile ttfile = null)
+        public IActionResult UpdateTicket(incident tt)
         {
-            if (ttfile != null)
-            {
-                MemoryStream ms = new MemoryStream();
-                ttfile.CopyTo(ms);
-                byte[] bytes = ms.ToArray();
-                tt.base64 = bytes;
-                ms.Dispose();
-            }
-
             TempData["msg"] = null;
             var status = db.Update_Data_Incident(tt);
             var msg = "";
@@ -147,5 +141,17 @@ namespace incidents.Controllers
                 return RedirectToAction($"EditTicket", "Data", tt.id);
             }
         }
+        [PermisosRol("admin,supervisor,empleado")]
+        public IActionResult NewIncident()
+        {
+            return View();
+        }
+        [PermisosRol("admin,supervisor,empleado")]
+        public IActionResult SaveNewIncident(incident tt)
+        {
+            db.Save_New_Incident(tt);
+            return RedirectToAction("Index");
+        }
+
     }
 }

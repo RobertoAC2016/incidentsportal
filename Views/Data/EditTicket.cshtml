@@ -66,7 +66,7 @@
                                     <span class="input-group-text">
                                         <i class="bi bi-card-text"></i>
                                     </span>
-                                    <input asp-for="message" class="form-control" />
+                                    <textarea asp-for="message" class="form-control" rows="3"></textarea>
                                 </div>
                                 <span asp-validation-for="message" class="text-danger"></span>
                             </div>
@@ -78,7 +78,7 @@
                                     </span>
                                     <select asp-for="importance" class="form-control form-select">
                                         <option value="">Select as option</option>
-                                        @foreach (var d in new string[] { "alta", "media", "baja" })
+                                        @foreach (var d in new string[] { "Alta", "Normal", "Baja" })
                                         {
                                             if (Model.importance.Equals(d))
                                             {
@@ -92,7 +92,7 @@
                                     </select>
                                 </div>
                                 <span asp-validation-for="importance" class="text-danger"></span>
-                            </div>
+                            </div>@*
                             <div class="form-group">
                                 Files
                                 <div class="input-group mb-3">
@@ -101,14 +101,14 @@
                                     </span>
                                     <input type="file" name="ttfile" class="form-control" />
                                 </div>
-                            </div>
+                            </div>*@
                             <div class="form-group">
                                 Date
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="bi bi-calendar"></i>
                                     </span>
-                                    <input asp-for="date" class="form-control" readonly/>
+                                    <input value="@Model.date.ToString("yyyy-MM-dd HH:mm:ss tt")" class="form-control" readonly/>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -119,7 +119,7 @@
                                     </span>
                                     <select asp-for="status" class="form-control form-select">
                                         <option value="">Select as option</option>
-                                        @foreach (var d in new string[] { "inactive", "active", "assigned", "pending" })
+                                        @foreach (var d in Model.estados)
                                         {
                                             if (Model.status.Equals(d))
                                             {

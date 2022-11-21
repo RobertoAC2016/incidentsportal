@@ -46,8 +46,8 @@ namespace incidents.Models
                 }
                 else
                 {
-                    SQL = $"insert into Atencion (Empleado, Departamento) values ('{usr.empleado}', '{usr.departamento}');" +
-                        "select SCOPE_IDENTITY();";
+                    SQL = $"declare @id int = (select count(idAtencion) from Atencion) + 1;insert into Atencion (idAtencion, Empleado, Departamento) values " +
+                        $"(@id, '{usr.empleado}', '{usr.departamento}');select @id;";
                     da = new SqlDataAdapter(SQL, CON);
                     dt = new DataTable();
                     da.Fill(dt);
@@ -172,14 +172,35 @@ namespace incidents.Models
             }
             return rols;
         }
-        public List<incident> get_incidents(String filterbyid = "")
+        public List<incident> get_incidents(String filterbystatus = "")
         {
             List<incident> tts = new List<incident>();
             try
             {
-                var fil = string.IsNullOrEmpty(filterbyid) ? "" : $" and idticket = {filterbyid}";
-                var SQL = $"select idticket, [Date], [from], [to], importance, subject, message " +
-                    $"from Ticket where date >= '{DateTime.Now.AddDays(-30)}'{fil} order by idticket desc;";
+                var fil = "";
+                if (!string.IsNullOrEmpty(filterbystatus))
+                {
+                    if (filterbystatus.Equals("open"))
+                    {
+                        fil = " and FK_EstadoTicket not in (5, 7)";
+                    }
+                    else if (filterbystatus.Equals("closed"))
+                    {
+                        fil = " and FK_EstadoTicket in (5, 7)";
+                    }
+                    else
+                    {
+                        fil = $" and idTicket = {filterbystatus}";
+                    }
+                }
+                var SQL = "select " +
+                    "T.idTicket, " +
+                    "(select e.EstadoTicket From Estado_del_Ticket e where e.idestadoticket = T.FK_EstadoTicket) as Status, " +
+                    "T.Date, T.[From], T.[To], T.Importance, T.Subject, T.Message, " +
+                    "case (select COALESCE(d.idTicket, 0) from DataTicket d where d.idTicket = T.idTicket) when 0 then 'Manual' else 'Automatico' end as Tipo " +
+                    "from Ticket t " +
+                    $"where date >= '{DateTime.Now.AddMonths(-2).ToString("yyyy-MM-dd")}'{fil} " +
+                    "order by [Date] desc";
                 SqlDataAdapter da = new SqlDataAdapter(SQL, getcon());
                 DataTable dt = new DataTable();
                 da.Fill(dt);
@@ -188,14 +209,14 @@ namespace incidents.Models
                     foreach (DataRow dr in dt.Rows)
                         tts.Add(new incident {
                             id = int.Parse($"{dr[0]}"),
-                            date = DateTime.Parse($"{dr[1]}"),
-                            status = "active",
-                            from = $"{dr[2]}",
-                            to = $"{dr[3]}",
-                            importance = $"{dr[4]}",
-                            subject = $"{dr[5]}",
-                            message = $"{dr[6]}",
-                            //path = $"{dr[7]}",
+                            status = $"{dr[1]}",
+                            date = DateTime.Parse($"{dr[2]}"),
+                            from = $"{dr[3]}",
+                            to = $"{dr[4]}",
+                            importance = $"{dr[5]}",
+                            subject = $"{dr[6]}",
+                            message = $"{dr[7]}",
+                            type = $"{dr[8]}",
                             //base64 = (byte[])dr[8],
                         });
                 }
@@ -369,9 +390,8 @@ namespace incidents.Models
                 }
                 else
                 {
-                    String subsql = tt.base64 != null ? ", [Attachment To Base 64]=@att " : "";
                     SQL = "UPDATE Ticket SET [from]=@from, [to]=@to, importance=@imp, [subject]=@subject, " +
-                        $"[message]=@message{subsql} WHERE idticket=@id;";
+                        $"[message]=@message, FK_EstadoTicket=@FK_EstadoTicket WHERE idticket=@id;";
                     SqlCommand query = new SqlCommand(SQL, CON);
 
                     query.Parameters.AddWithValue("@from", tt.from);
@@ -379,10 +399,7 @@ namespace incidents.Models
                     query.Parameters.AddWithValue("@imp", tt.importance);
                     query.Parameters.AddWithValue("@subject", tt.subject);
                     query.Parameters.AddWithValue("@message", tt.message);
-                    if (tt.base64 != null)
-                    {
-                        query.Parameters.AddWithValue("@att", tt.base64);
-                    }
+                    query.Parameters.AddWithValue("@FK_EstadoTicket", get_estatusId(tt.status));
                     query.Parameters.AddWithValue("@id", tt.id);
                     query.ExecuteNonQuery();
                 }
@@ -392,6 +409,72 @@ namespace incidents.Models
                 status = "error";
             }
             return status;
+        }
+        private String get_estatusId(string status)
+        {
+            String getId = "0";
+            try
+            {
+                CON = getcon();
+                var SQL = $"select idestadoticket from Estado_del_Ticket where EstadoTicket = '{status}';";
+                SqlDataAdapter da = new SqlDataAdapter(SQL, CON);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                if (dt.Rows.Count > 0)
+                {
+                    getId = dt.AsEnumerable().Select(c => c.Field<int>(0)).FirstOrDefault().ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                getId = "0";
+            }
+            return getId;
+        }
+        public bool Save_New_Incident(incident tt)
+        {
+            bool status = true;
+            try
+            {
+                CON = getcon();
+                var SQL = $"exec InsertDataTicketManualCore '{tt.from}', '{tt.to}', '{tt.importance}', '{tt.subject}', '{tt.message}';select 1;";
+                SqlDataAdapter da = new SqlDataAdapter(SQL, CON);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                if (dt.Rows.Count <= 0)
+                {
+                    status = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                status = false;
+            }
+            return status;
+        }
+        public List<string>? get_estados()
+        {
+            List<string> estados = new List<string>();
+            try
+            {
+                CON = getcon();
+                var SQL = $"select EstadoTicket from Estado_del_Ticket;";
+                SqlDataAdapter da = new SqlDataAdapter(SQL, CON);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                if (dt.Rows.Count > 0)
+                {
+                    foreach (DataRow item in dt.Rows)
+                    {
+                        estados.Add($"{item[0]}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                estados = null;
+            }
+            return estados;
         }
     }
 }

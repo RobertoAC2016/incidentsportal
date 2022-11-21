@@ -1,0 +1,115 @@
+﻿@model incidents.Models.incident
+
+<div class="row">
+    <div class="col-12 text-center" style="color:red;font-weight:bold;">
+        @ViewBag.Message
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-3">&nbsp;</div>
+    <div class="col-md-6">
+
+        <div class="card" style="width: 28rem;">
+            <div class="card card-header">
+                <h3>
+                    Create new ticket
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <form asp-action="SaveNewIncident">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group">
+                                <label class="control-label">From</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-at"></i>
+                                    </span>
+                                    <input asp-for="from" class="form-control" type="email" />
+                                </div>
+                                <span asp-validation-for="from" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">To</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-at"></i>
+                                    </span>
+                                    <input asp-for="to" class="form-control" type="email" />
+                                </div>
+                                <span asp-validation-for="to" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                Importance
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-exclamation-circle"></i>
+                                    </span>
+                                    <select asp-for="importance" class="form-control form-select">
+                                        <option value="">Select as option</option>
+                                        @foreach (var d in new string[] { "Alta", "Normal", "Baja" })
+                                        {
+                                            <option value="@d">@d</option>
+                                        }
+                                    </select>
+                                </div>
+                                <span asp-validation-for="importance" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Subject</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-textarea-t"></i>
+                                    </span>
+                                    <input asp-for="subject" class="form-control" />
+                                </div>
+                                <span asp-validation-for="subject" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Message</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-card-text"></i>
+                                    </span>
+                                    <textarea asp-for="message" class="form-control" rows="3"></textarea>
+                                </div>
+                                <span asp-validation-for="message" class="text-danger"></span>
+                            </div>
+                            <div>
+                                &nbsp;
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6 text-center">
+                                        <div class="btn btn-info">
+                                            <a asp-controller="Data" asp-action="Index" class="text-white" style="text-decoration:none;">
+                                                <i class="bi bi-caret-left"></i>
+                                                Back
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 text-md-center">
+                                        <div class="btn btn-primary">
+                                            <i class="bi bi-cloud-arrow-down"></i>
+                                            <input type="submit" value="Save" class="text-white" style="border-top: 0px;border-right: 0px;border-bottom: 0px;border-left: 0px;background-color:transparent;" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-3">&nbsp;</div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
