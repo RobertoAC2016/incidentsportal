@@ -2,6 +2,9 @@
 using incidents.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace incidents.Controllers
 {
@@ -12,7 +15,7 @@ namespace incidents.Controllers
         {
             db = new DB(conf);
         }
-        [PermisosRol("admin,supervisor,empleado")]
+        //[PermisosRol("admin,supervisor,empleado")]
         public ActionResult<List<incident>> Index(String filter = "")
         {
             List<incident> tts = db.get_incidents(filter);
@@ -32,7 +35,7 @@ namespace incidents.Controllers
             }
             return View(users);
         }
-        [PermisosRol("admin")]
+        //[PermisosRol("admin")]
         public ActionResult<registro> Details(String id)
         {
             List<registro> users = db.get_users(id);
@@ -50,7 +53,7 @@ namespace incidents.Controllers
             else
                 return RedirectToAction("Index", "Error");
         }
-        [PermisosRol("admin")]
+        //[PermisosRol("admin")]
         public ActionResult<registro> Edit(String id)
         {
             if (!string.IsNullOrEmpty(id))
@@ -90,7 +93,7 @@ namespace incidents.Controllers
                 return RedirectToAction($"Edit", "Data", reg.idatencion);
             }
         }
-        [PermisosRol("admin,supervisor,empleado")]
+        //[PermisosRol("admin,supervisor,empleado")]
         public ActionResult<incident> ViewTT(String id)
         {
             List<incident> tts = db.get_incidents(id);
@@ -99,7 +102,7 @@ namespace incidents.Controllers
             else
                 return RedirectToAction("Index", "Error");
         }
-        [PermisosRol("admin,supervisor,empleado")]
+        //[PermisosRol("admin,supervisor,empleado")]
         public ActionResult<incident> EditTicket(String id)
         {
             if (!string.IsNullOrEmpty(id))
@@ -141,7 +144,7 @@ namespace incidents.Controllers
                 return RedirectToAction($"EditTicket", "Data", tt.id);
             }
         }
-        [PermisosRol("admin,supervisor,empleado")]
+        //[PermisosRol("admin,supervisor,empleado")]
         public IActionResult NewIncident()
         {
             return View();
@@ -152,6 +155,19 @@ namespace incidents.Controllers
             db.Save_New_Incident(tt);
             return RedirectToAction("Index");
         }
-
+        public FileResult Download(mail_files obj)
+        {
+            FileResult files = null;
+            if (!String.IsNullOrEmpty(obj.id))
+            {
+                var fileexists = db.get_incident_files(obj.id, true);
+                if (fileexists.Count > 0)
+                {
+                    var filesinbytes = fileexists.Where(o => o.filename.Equals(obj.filename)).FirstOrDefault();
+                    files = File(filesinbytes.filebytes, System.Net.Mime.MediaTypeNames.Application.Octet, filesinbytes.filename);
+                }
+            }
+            return files;
+        }
     }
 }

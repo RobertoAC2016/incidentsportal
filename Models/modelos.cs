@@ -57,9 +57,15 @@ namespace incidents.Models
         public String? message { get; set; }
         public String? path { get; set; }
         public String? type { get; set; }
-        public byte[]? base64 { get; set; }
+        public List<String>? files { get; set; }
         public DateTime date { get; set; }
         public String status { get; set; } = "active";
         public List<String>? estados { get; set; }
+    }
+    public class mail_files
+    {
+        public string? id { get; set; }
+        public string? filename { get; set; }
+        public byte[]? filebytes { get; set; }
     }
 }

@@ -1,8 +1,11 @@
-﻿using NuGet.Protocol.Plugins;
+﻿using Newtonsoft.Json;
+using NuGet.Protocol.Plugins;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Runtime.Intrinsics.X86;
+using System.Security.Cryptography;
 
 namespace incidents.Models
 {
@@ -217,7 +220,7 @@ namespace incidents.Models
                             subject = $"{dr[6]}",
                             message = $"{dr[7]}",
                             type = $"{dr[8]}",
-                            //base64 = (byte[])dr[8],
+                            files = get_incident_files($"{dr[0]}").Select(o=>o.filename).ToList(),
                         });
                 }
             }
@@ -475,6 +478,49 @@ namespace incidents.Models
                 estados = null;
             }
             return estados;
+        }
+        public List<mail_files> get_incident_files(String filterbyid = "", bool namesandfiles = false)
+        {
+            List<mail_files> files = new List<mail_files>();
+            try
+            {
+                var SQL = $"select [Path Attachment], [Attachment To Base 64] from DataTicket where idTicket = {filterbyid};";
+                SqlDataAdapter da = new SqlDataAdapter(SQL, getcon());
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                if (dt.Rows.Count > 0)
+                {
+                    files = get_db_files((byte[])dt.Rows[0][1], namesandfiles);
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            return files;
+        }
+        private List<mail_files> get_db_files(byte[] filesinbytes, bool getbytes = false)
+        {
+            List<mail_files> filelist = new List<mail_files>(); 
+            if (filesinbytes.Length > 0)
+            {
+                String str = System.Text.Encoding.UTF8.GetString(filesinbytes);
+
+                dynamic json = JsonConvert.DeserializeObject<dynamic>(str);
+
+                foreach (var item in json)
+                {
+                    foreach (var val in item)
+                    {
+                        var filename = val.Name;
+                        var valor = val.Value;
+                        filelist.Add(new mail_files {
+                            filebytes = getbytes ? Convert.FromBase64String(valor.ToString()) : null,
+                            filename = filename
+                        });
+                    }
+                }
+            }
+            return filelist;
         }
     }
 }

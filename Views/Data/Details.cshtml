@@ -1,94 +1,124 @@
 ﻿@model registro
 
-<div>
-    <h4>Employee details</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-3">Id
-        </dt>
-        <dd class = "col-sm-7">
-            @Html.DisplayFor(model => model.idatencion)
-        </dd>
-        <dt class = "col-sm-3">Empleado
-        </dt>
-        <dd class = "col-sm-7">
-            @Html.DisplayFor(model => model.empleado)
-        </dd>
-        <dt class = "col-sm-3">Usuario
-        </dt>
-        <dd class = "col-sm-7">
-            @Html.DisplayFor(model => model.usuario)
-        </dd>
-        <dt class="col-sm-3">Contraseña
-        </dt>
-        <dd class = "col-sm-7">
-            @Html.DisplayFor(model => model.contrasena)
-        </dd>
-        <dt class = "col-sm-3">Departamento
-        </dt>
-        <dd class = "col-sm-7">
-            @Html.DisplayFor(model => model.departamento)
-        </dd>
-        <dt class = "col-sm-3">Rol
-        </dt>
-        <dd class = "col-sm-7">
-            @Html.DisplayFor(model => model.rol)
-        </dd>
-        <dt class="col-sm-3">
-            Entrada - Salida
-        </dt>
-        <dd class = "col-sm-7">
-            <div class="row">
-                <div class="col-sm-3">
-                    <div class="btn btn-outline-primary">
-                        <i class="bi bi-box-arrow-right"></i>
-                        @Html.DisplayFor(model => model.entrada)
-                    </div>
-                </div>
-                <div class="col-sm-1">
-                    -
-                </div>
-                <div class="col-sm-3">
-                    <div class="btn btn-outline-primary">
-                        <i class="bi bi-box-arrow-left"></i>
-                        @Html.DisplayFor(model => model.salida)
-                    </div>
-                </div>
+<div class="row">
+    <div class="col-md-2">&nbsp;</div>
+    <div class="col-md-8">
+
+        <div class="card" style="width: 35rem;">
+            <div class="card-header">
+                <h4>Employee details</h4>
             </div>
-        </dd>
-        <dt class="col-sm-3">
-            Comida Entrada - Salida
-        </dt>
-        <dd class="col-sm-7">
-            <div class="row">
-                <div class="col-sm-3">
-                    <div class="btn btn-outline-primary">
-                        <i class="bi bi-box-arrow-right"></i>
-                        @Html.DisplayFor(model => model.entrada_comida)
-                    </div>
-                </div>
-                <div class="col-sm-1">
-                    -
-                </div>
-                <div class="col-sm-3">
-                    <div class="btn btn-outline-primary">
-                        <i class="bi bi-box-arrow-left"></i>
-                        @Html.DisplayFor(model => model.salida_comida)
-                    </div>
-                </div>
+            <div class="card-body">
+
+                <dl class="row">
+                    <dt class="col-sm-3">
+                        Id
+                    </dt>
+                    <dd class="col-sm-7">
+                        @Html.DisplayFor(model => model.idatencion)
+                    </dd>
+                    <dt class="col-sm-3">
+                        Empleado
+                    </dt>
+                    <dd class="col-sm-7">
+                        @Html.DisplayFor(model => model.empleado)
+                    </dd>
+                    <dt class="col-sm-3">
+                        Usuario
+                    </dt>
+                    <dd class="col-sm-7">
+                        @Html.DisplayFor(model => model.usuario)
+                    </dd>
+                    <dt class="col-sm-3">
+                        Contraseña
+                    </dt>
+                    <dd class="col-sm-7">
+                        @Html.DisplayFor(model => model.contrasena)
+                    </dd>
+                    <dt class="col-sm-3">
+                        Departamento
+                    </dt>
+                    <dd class="col-sm-7">
+                        @Html.DisplayFor(model => model.departamento)
+                    </dd>
+                    <dt class="col-sm-3">
+                        Rol
+                    </dt>
+                    <dd class="col-sm-7">
+                        @Html.DisplayFor(model => model.rol)
+                    </dd>
+                    <dt class="col-sm-3">
+                        Entrada - Salida
+                    </dt>
+                    <dd class="col-sm-7">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="btn btn-outline-primary">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    @Html.DisplayFor(model => model.entrada)
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                -
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="btn btn-outline-primary">
+                                    <i class="bi bi-box-arrow-left"></i>
+                                    @Html.DisplayFor(model => model.salida)
+                                </div>
+                            </div>
+                        </div>
+                    </dd>
+                    <dt class="col-sm-3">
+                        Comida Entrada - Salida
+                    </dt>
+                    <dd class="col-sm-7">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="btn btn-outline-primary">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    @Html.DisplayFor(model => model.entrada_comida)
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                -
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="btn btn-outline-primary">
+                                    <i class="bi bi-box-arrow-left"></i>
+                                    @Html.DisplayFor(model => model.salida_comida)
+                                </div>
+                            </div>
+                        </div>
+                    </dd>
+                </dl>
+
             </div>
-        </dd>
-    </dl>
-</div>
-<div>
-    <div class="btn btn-info">
-        <a href="@Url.ActionLink("Users", "Data")" class="text-white" style="text-decoration:none;">
-            <i class="bi bi-arrow-left"></i>
-        </a>
+            <div class="card-footer">
+
+                <div class="row">
+                    <div class="col-3">
+                        <div class="btn btn-info">
+                            <a href="@Url.ActionLink("Users", "Data")" class="text-white" style="text-decoration:none;">
+                                <i class="bi bi-caret-left"></i>
+                                Back
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                    </div>
+                    <div class="col-3" style="display:flex;justify-content: end;">
+                        <div class="btn btn-primary">
+                            <a href="@Url.ActionLink("Edit", "Data", new { id = Model.idatencion })" class="text-white" style="text-decoration:none;">
+                                <i class="bi bi-pencil-square"></i>
+                                Edit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
-    <div class="btn btn-primary">
-        <a href="@Url.ActionLink("Edit", "Data", new { id = Model.idatencion })" class="text-white" style="text-decoration:none;">
-            <i class="bi bi-pencil-square"></i>
-        </a>
-    </div>
+    <div class="col-md-2">&nbsp;</div>
 </div>
